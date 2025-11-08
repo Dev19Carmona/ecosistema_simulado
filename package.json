@@ -1,7 +1,7 @@
 {
   "name": "ecosistema_simulado",
   "version": "0.0.1",
-  "description": "",
+  "description": "Sistema de monitoreo IoT con sensores simulados",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
@@ -12,6 +12,7 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
+    "simulator": "node simulator.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
@@ -20,8 +21,13 @@
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^3.3.0",
     "@nestjs/core": "^11.0.1",
+    "@nestjs/mongoose": "^10.1.0",
     "@nestjs/platform-express": "^11.0.1",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "mongoose": "^8.9.3",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
