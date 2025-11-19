@@ -994,34 +994,51 @@ Si prefieres usar el dashboard localmente (opcional):
    - Si abres desde tu máquina, se conectará a Render automáticamente
    - Si estás en desarrollo local, se conectará a `localhost:3000`
 
-### 📈 Grafana (Solo Disponible Localmente)
+### 📈 Grafana (Solo Disponible Localmente - Opcional)
 
-**⚠️ Importante**: Grafana NO está disponible en Render.com. Solo funciona cuando usas Docker localmente.
+**⚠️ Importante**: 
+- Grafana **NO está desplegado en Render.com**
+- Grafana solo funciona **localmente con Docker**
+- **El Dashboard HTML** es el que muestra las estadísticas en Render.com
 
-**Para usar Grafana:**
+**¿Qué es Grafana?**
+- Grafana es una herramienta profesional de visualización de datos
+- Permite crear dashboards avanzados con múltiples paneles
+- Es más complejo pero más potente que el Dashboard HTML
 
-1. **Levantar servicios Docker localmente:**
+**¿Necesito Grafana?**
+- ❌ **NO es necesario** para ver las estadísticas en Render.com
+- ✅ El **Dashboard HTML** ya muestra todo lo que necesitas
+- ✅ Grafana es **opcional** y solo útil para análisis avanzados locales
+
+**Para usar Grafana (solo si quieres probarlo localmente):**
+
+1. **Crear docker-compose.yml** (ver [GRAFANA.md](GRAFANA.md) para detalles)
+
+2. **Levantar servicios Docker:**
    ```bash
    docker-compose up -d
    ```
 
-2. **Acceder a Grafana:**
+3. **Acceder a Grafana:**
    - URL: http://localhost:3001
    - Usuario: `admin`
    - Contraseña: `admin`
 
-3. **Configurar Data Source:**
+4. **Configurar Data Source:**
    - Ve a Configuration → Data Sources
-   - Agrega MongoDB:
-     - URL: `mongodb+srv://usuario:password@cluster.mongodb.net:27017`
-     - Database: `ecosistema_simulado`
-     - Collection: `sensordatas`
-   - **Nota**: Grafana se conecta directamente a MongoDB Atlas, no a la API de Render
+   - Agrega MongoDB (requiere plugin)
+   - URL: `mongodb://mongodb:27017` (local) o `mongodb+srv://...` (Atlas)
+   - Database: `ecosistema_simulado`
+   - Collection: `sensordatas`
 
-4. **Crear Dashboard:**
-   - Crea paneles Time Series para visualizar datos
+5. **Crear Dashboard:**
+   - Crea paneles Time Series, Gauge, Stat, Table
    - Configura auto-refresh cada 5-10 segundos
-   - Agrega filtros por `sensor_id`
+
+**📚 Para más detalles:**
+- **Grafana Local**: [GRAFANA.md](GRAFANA.md)
+- **Grafana en Render.com**: [RENDER-GRAFANA.md](RENDER-GRAFANA.md) ⭐ Nuevo
 
 ### 🔄 Flujo Completo en Producción
 

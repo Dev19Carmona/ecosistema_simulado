@@ -1,0 +1,15 @@
+# Dockerfile para Grafana en Render.com
+FROM grafana/grafana:latest
+
+# Exponer el puerto de Grafana
+EXPOSE 3000
+
+# Variables de entorno por defecto
+ENV GF_SECURITY_ADMIN_USER=admin
+ENV GF_SECURITY_ADMIN_PASSWORD=admin
+ENV GF_SERVER_ROOT_URL=/
+ENV GF_SERVER_SERVE_FROM_SUB_PATH=false
+
+# No necesitamos CMD porque la imagen base ya lo tiene configurado
+# Grafana se iniciará automáticamente
+
