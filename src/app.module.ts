@@ -1,12 +1,21 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import { SensorsModule } from './sensors/sensors.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    // Servir archivos estáticos (dashboard.html)
+    // El dashboard se sirve en la raíz, pero las rutas /sensors/* tienen prioridad
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+      serveRoot: '/',
+      exclude: ['/sensors*'], // Excluir solo las rutas de la API
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],

@@ -38,6 +38,9 @@ RUN npm ci --only=production --legacy-peer-deps && npm cache clean --force
 # Copiar el build desde el stage anterior
 COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
 
+# Copiar carpeta public con dashboard.html
+COPY --chown=nestjs:nodejs public ./public
+
 # Cambiar al usuario no-root
 USER nestjs
 

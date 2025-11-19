@@ -891,10 +891,179 @@ curl -X POST https://tu-app.onrender.com/sensors/data \
 El simulador soporta HTTPS automáticamente. Para que apunte a tu URL de Render:
 
 ```bash
-SERVER_HOST=tu-app.onrender.com SERVER_PORT=443 node simulator.js
+SERVER_HOST=ecosistema-simulado.onrender.com SERVER_PORT=443 node simulator.js
 ```
 
 El simulador detectará automáticamente que el puerto 443 requiere HTTPS y usará el protocolo correcto.
+
+---
+
+## 🚀 Producción: Acceso a Componentes Desplegados
+
+Una vez desplegado en Render.com, todos los servicios están disponibles desde una sola URL:
+
+**URL Base**: `https://ecosistema-simulado.onrender.com`
+
+### 📊 Dashboard Web (Desplegado en Render.com) ⭐
+
+**✅ El dashboard ahora está disponible directamente en Render.com**
+
+**Acceso al Dashboard:**
+- **URL Principal**: https://ecosistema-simulado.onrender.com
+- **URL Directa**: https://ecosistema-simulado.onrender.com/dashboard.html
+
+**Características:**
+- ✅ **Totalmente funcional desde Render.com** - No necesitas abrir archivos locales
+- ✅ Actualización automática cada 5 segundos
+- ✅ Gráficos de líneas (tendencia temporal)
+- ✅ Gráficos de barras (promedio por sensor)
+- ✅ Tabla de datos en tiempo real
+- ✅ Tarjetas de estadísticas
+- ✅ Se conecta automáticamente a la API en el mismo dominio
+
+**Uso:**
+1. Simplemente abre https://ecosistema-simulado.onrender.com en tu navegador
+2. El dashboard se cargará automáticamente
+3. Los datos se actualizarán cada 5 segundos
+
+### 🌐 API REST (Desplegada en Render.com)
+
+**Endpoints disponibles:**
+
+1. **Estadísticas generales:**
+   ```
+   https://ecosistema-simulado.onrender.com/sensors/stats
+   ```
+
+2. **Todos los datos (últimas 100 lecturas):**
+   ```
+   https://ecosistema-simulado.onrender.com/sensors/data
+   ```
+
+3. **Datos recientes (última hora):**
+   ```
+   https://ecosistema-simulado.onrender.com/sensors/data/recent/60
+   ```
+
+4. **Datos de un sensor específico:**
+   ```
+   https://ecosistema-simulado.onrender.com/sensors/data/proximidad_01
+   ```
+
+5. **Enviar datos (POST):**
+   ```bash
+   curl -X POST https://ecosistema-simulado.onrender.com/sensors/data \
+     -H "Content-Type: application/json" \
+     -d '{"sensor_id":"sensor_01","distancia_cm":25.5}'
+   ```
+
+### 📊 Dashboard HTML (Alternativa Local)
+
+Si prefieres usar el dashboard localmente (opcional):
+
+1. **Abrir el dashboard local:**
+   - Haz doble clic en `dashboard.html` (en la raíz del proyecto)
+   - O ejecuta: `abrir-dashboard.bat` (Windows)
+
+2. **Funcionamiento:**
+   - El dashboard detecta automáticamente si estás en `localhost` o en producción
+   - Si abres desde tu máquina, se conectará a Render automáticamente
+   - Si estás en desarrollo local, se conectará a `localhost:3000`
+
+### 📈 Grafana (Solo Disponible Localmente)
+
+**⚠️ Importante**: Grafana NO está disponible en Render.com. Solo funciona cuando usas Docker localmente.
+
+**Para usar Grafana:**
+
+1. **Levantar servicios Docker localmente:**
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **Acceder a Grafana:**
+   - URL: http://localhost:3001
+   - Usuario: `admin`
+   - Contraseña: `admin`
+
+3. **Configurar Data Source:**
+   - Ve a Configuration → Data Sources
+   - Agrega MongoDB:
+     - URL: `mongodb+srv://usuario:password@cluster.mongodb.net:27017`
+     - Database: `ecosistema_simulado`
+     - Collection: `sensordatas`
+   - **Nota**: Grafana se conecta directamente a MongoDB Atlas, no a la API de Render
+
+4. **Crear Dashboard:**
+   - Crea paneles Time Series para visualizar datos
+   - Configura auto-refresh cada 5-10 segundos
+   - Agrega filtros por `sensor_id`
+
+### 🔄 Flujo Completo en Producción
+
+```
+Simulador Local
+     │
+     │ HTTPS POST
+     ▼
+API + Dashboard en Render.com
+(https://ecosistema-simulado.onrender.com)
+     │
+     ├──────────────┐
+     │              │
+     │ Mongoose     │ HTTP (mismo dominio)
+     ▼              ▼
+MongoDB Atlas   Dashboard Web
+   (Nube)      (Render.com)
+     │
+     │ (Opcional - Solo local)
+     ▼
+   Grafana
+  (Local con Docker)
+```
+
+**Nota**: El dashboard ahora está desplegado en Render.com junto con la API. Todo funciona desde una sola URL.
+
+### 📱 Enviar Datos desde el Simulador a Render
+
+Para que el simulador envíe datos a tu API en Render:
+
+```bash
+SERVER_HOST=ecosistema-simulado.onrender.com SERVER_PORT=443 node simulator.js
+```
+
+**O usar el script incluido `simulador-render.bat` (Windows):**
+```batch
+# Simplemente ejecuta:
+simulador-render.bat
+```
+
+El script ya está incluido en el proyecto y está configurado para enviar datos a Render.com.
+
+### ✅ Verificación Rápida
+
+1. **Abrir el Dashboard en Render:**
+   - Ve a: https://ecosistema-simulado.onrender.com
+   - El dashboard debería cargar automáticamente
+
+2. **Verificar que la API funciona:**
+   ```bash
+   curl https://ecosistema-simulado.onrender.com/sensors/stats
+   ```
+   O abre en el navegador: https://ecosistema-simulado.onrender.com/sensors/stats
+
+3. **Enviar datos de prueba:**
+   ```bash
+   # Opción 1: Usar el script (Windows)
+   simulador-render.bat
+   
+   # Opción 2: Comando directo
+   SERVER_HOST=ecosistema-simulado.onrender.com SERVER_PORT=443 node simulator.js
+   ```
+
+4. **Ver los datos en el Dashboard:**
+   - Después de enviar datos con el simulador, refresca el dashboard
+   - Los datos aparecerán automáticamente en los gráficos
 
 ---
 
