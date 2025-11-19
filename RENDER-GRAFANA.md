@@ -127,6 +127,26 @@ Agrega estas variables:
 
 Click en **"Create Web Service"**
 
+**⚠️ IMPORTANTE - Verificación después de crear:**
+
+Después de crear el servicio, **VERIFICA** que esté usando el Dockerfile correcto:
+
+1. Ve a **"Settings"** → **"Build & Deploy"**
+2. Confirma que **"Dockerfile Path"** sea: `Dockerfile.grafana`
+3. Si está vacío o dice `Dockerfile`, cámbialo a `Dockerfile.grafana`
+4. Guarda los cambios
+5. **Render.com reconstruirá automáticamente** (no necesitas hacer deploy manual)
+
+**¿Cómo saber si se está reconstruyendo?**
+- Ve a la pestaña **"Events"** o **"Logs"**
+- Deberías ver: "Building Docker image..." o "Updating..."
+- Tiempo estimado: 5-10 minutos
+
+**Si ves el dashboard HTML en lugar de Grafana:**
+- ⚠️ Está usando el Dockerfile incorrecto
+- ✅ Consulta: [TROUBLESHOOTING-GRAFANA.md](TROUBLESHOOTING-GRAFANA.md)
+- ✅ Consulta: [VERIFICAR-DEPLOY-GRAFANA.md](VERIFICAR-DEPLOY-GRAFANA.md) para verificar el deploy
+
 ---
 
 ## ⏳ Paso 3: Esperar el Build
@@ -346,6 +366,19 @@ Dashboard HTML   Grafana
 - ❌ **Servicios separados**: Son 2 servicios independientes en Render.com
 
 **Para más detalles, consulta: [COMPARACION-SERVICIOS.md](COMPARACION-SERVICIOS.md)**
+
+---
+
+## 🐛 Problema: Veo el Dashboard HTML en lugar de Grafana
+
+**Si cuando accedes a la URL de Grafana ves el dashboard HTML:**
+
+1. ⚠️ Render.com está usando el Dockerfile incorrecto
+2. ✅ Ve a **Settings** → **Build & Deploy**
+3. ✅ Cambia **"Dockerfile Path"** a: `Dockerfile.grafana`
+4. ✅ Guarda y espera el rebuild
+
+**Para más detalles, consulta: [TROUBLESHOOTING-GRAFANA.md](TROUBLESHOOTING-GRAFANA.md)**
 
 ---
 
