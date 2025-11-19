@@ -140,8 +140,10 @@ El archivo `.env` ya está configurado con MongoDB Atlas:
 
 ```env
 PORT=3000
-MONGODB_URI=mongodb+srv://camilocr3:Samanta1234*@loanscluster.fktx4sx.mongodb.net/ecosistema_simulado?retryWrites=true&w=majority
+MONGODB_URI=mongodb+srv://usuario:password@cluster.mongodb.net/ecosistema_simulado?retryWrites=true&w=majority
 ```
+
+⚠️ **Nota**: Reemplaza `usuario:password@cluster.mongodb.net` con tus credenciales reales de MongoDB Atlas.
 
 ### Paso 3: Iniciar el Servidor
 
@@ -366,20 +368,46 @@ Obtiene estadísticas generales
 
 ---
 
+## 🔧 Variables de Entorno
+
+### Variables del Servidor (NestJS)
+
+| Variable | Descripción | Default | Requerido | Uso |
+|----------|-------------|---------|-----------|-----|
+| `PORT` | Puerto donde corre el servidor | `3000` | ❌ No | Local: `3000`<br>Render.com: Asignado automáticamente |
+| `MONGODB_URI` | URI de conexión a MongoDB | - | ✅ **Sí** | Formato: `mongodb+srv://user:pass@cluster.mongodb.net/dbname` |
+
+**Ejemplo para desarrollo local:**
+```env
+PORT=3000
+MONGODB_URI=mongodb+srv://usuario:password@cluster.mongodb.net/ecosistema_simulado?retryWrites=true&w=majority
+```
+
+**Para Render.com:**
+- Solo configura `MONGODB_URI`
+- `PORT` es asignado automáticamente por Render.com (no lo configures manualmente)
+
+---
+
 ## 🤖 Configuración del Simulador
 
 El simulador admite configuración mediante variables de entorno:
 
-### Variables Disponibles
+### Variables del Simulador
 
-| Variable | Descripción | Default |
-|----------|-------------|---------|
-| `SERVER_HOST` | Host del servidor | localhost |
-| `SERVER_PORT` | Puerto del servidor | 3000 |
-| `SENSOR_ID` | Identificador del sensor | proximidad_01 |
-| `INTERVAL_MS` | Intervalo de envío (ms) | 5000 |
-| `MIN_DISTANCE` | Distancia mínima (cm) | 5.0 |
-| `MAX_DISTANCE` | Distancia máxima (cm) | 200.0 |
+| Variable | Descripción | Default | Requerido |
+|----------|-------------|---------|-----------|
+| `SERVER_HOST` | Host del servidor | `localhost` | ❌ No |
+| `SERVER_PORT` | Puerto del servidor | `3000` | ❌ No |
+| `USE_HTTPS` | Forzar uso de HTTPS | `false` | ❌ No |
+| `SENSOR_ID` | Identificador del sensor | `proximidad_01` | ❌ No |
+| `INTERVAL_MS` | Intervalo de envío (ms) | `5000` | ❌ No |
+| `MIN_DISTANCE` | Distancia mínima (cm) | `5.0` | ❌ No |
+| `MAX_DISTANCE` | Distancia máxima (cm) | `200.0` | ❌ No |
+
+**Notas importantes:**
+- Si `SERVER_PORT=443`, el simulador usa HTTPS automáticamente
+- `USE_HTTPS=true` fuerza HTTPS independientemente del puerto
 
 ### Ejemplos de Uso
 
@@ -788,9 +816,92 @@ node simulator.js
 
 ---
 
+## ☁️ Opción 3: Despliegue en Render.com con Docker
+
+### Despliegue en la Nube
+
+Puedes desplegar tu aplicación en **Render.com** usando Docker para tenerla disponible públicamente en internet.
+
+### Características
+
+- ✅ **Despliegue automático** desde Git
+- ✅ **SSL automático** (HTTPS)
+- ✅ **Plan gratuito disponible**
+- ✅ **Dockerfile incluido** en el proyecto
+- ✅ **MongoDB Atlas** como base de datos
+- ✅ **URL pública** para acceder desde cualquier lugar
+
+### Requisitos
+
+- Cuenta en Render.com (gratis): https://render.com
+- Repositorio Git (GitHub, GitLab o Bitbucket)
+- MongoDB Atlas configurado
+
+### Pasos Rápidos
+
+1. **Preparar el repositorio**
+   - Asegúrate de que el `Dockerfile` esté en la raíz del proyecto
+   - Sube tu código a GitHub/GitLab/Bitbucket
+
+2. **Crear servicio en Render.com**
+   - Ve a https://dashboard.render.com
+   - Click en "New +" → "Web Service"
+   - Conecta tu repositorio
+   - Selecciona "Docker" como Runtime
+
+3. **Configurar variables de entorno**
+   ```
+   MONGODB_URI=mongodb+srv://usuario:password@cluster.mongodb.net/ecosistema_simulado?retryWrites=true&w=majority
+   ```
+
+   ⚠️ **Nota sobre PORT**: Render.com asigna automáticamente el puerto. NO configures la variable `PORT` manualmente, ya que Render.com la inyecta automáticamente y tu aplicación la lee desde `process.env.PORT`.
+
+4. **Desplegar**
+   - Click en "Create Web Service"
+   - Espera 5-10 minutos para el build
+   - Obtén tu URL pública (ej: `https://tu-app.onrender.com`)
+
+### Documentación Completa
+
+Para una guía detallada paso a paso, consulta: **[RENDER.md](RENDER.md)**
+
+La guía incluye:
+- ✅ Instrucciones detalladas de configuración
+- ✅ Troubleshooting común
+- ✅ Configuración de MongoDB Atlas
+- ✅ Testing del despliegue
+- ✅ Monitoreo y logs
+
+### Ejemplo de Uso
+
+Una vez desplegado, puedes usar tu API desde cualquier lugar:
+
+```bash
+# Verificar que funciona
+curl https://tu-app.onrender.com/sensors/stats
+
+# Enviar datos
+curl -X POST https://tu-app.onrender.com/sensors/data \
+  -H "Content-Type: application/json" \
+  -d '{"sensor_id":"sensor_01","distancia_cm":25.5}'
+```
+
+### Actualizar Simulador para Render
+
+El simulador soporta HTTPS automáticamente. Para que apunte a tu URL de Render:
+
+```bash
+SERVER_HOST=tu-app.onrender.com SERVER_PORT=443 node simulator.js
+```
+
+El simulador detectará automáticamente que el puerto 443 requiere HTTPS y usará el protocolo correcto.
+
+---
+
 ## 📚 Documentación Adicional
 
 - **ENTREGA.md** - Documentación para evaluación del proyecto
+- **RENDER.md** - Guía completa de despliegue en Render.com con Docker
 - **Código fuente** - Comentarios inline en los archivos TypeScript
 
 ---
@@ -832,4 +943,11 @@ node simulator.js
 docker-compose up -d
 node simulator.js
 # Abrir http://localhost:3001 (Grafana) o dashboard.html
+```
+
+### Inicio Rápido - Opción Render.com:
+```bash
+# 1. Seguir guía en RENDER.md para desplegar
+# 2. Una vez desplegado, usar la URL pública
+curl https://tu-app.onrender.com/sensors/stats
 ```

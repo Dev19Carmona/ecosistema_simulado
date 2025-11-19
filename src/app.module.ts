@@ -10,9 +10,15 @@ import { SensorsModule } from './sensors/sensors.module';
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGODB_URI'),
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const mongoUri = configService.get<string>('MONGODB_URI');
+        if (!mongoUri) {
+          throw new Error('MONGODB_URI no está definida en las variables de entorno');
+        }
+        return {
+          uri: mongoUri,
+        };
+      },
       inject: [ConfigService],
     }),
     SensorsModule,

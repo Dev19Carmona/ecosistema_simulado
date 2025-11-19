@@ -8,16 +8,20 @@
  */
 
 const http = require('http');
+const https = require('https');
 
 // Configuración
 const CONFIG = {
   SERVER_HOST: process.env.SERVER_HOST || 'localhost',
-  SERVER_PORT: process.env.SERVER_PORT || 3000,
+  SERVER_PORT: parseInt(process.env.SERVER_PORT) || 3000,
   SENSOR_ID: process.env.SENSOR_ID || 'proximidad_01',
-  INTERVAL_MS: parseInt(5000), // 5 segundos por defecto
+  INTERVAL_MS: parseInt(process.env.INTERVAL_MS) || 5000,
   MIN_DISTANCE: parseFloat(process.env.MIN_DISTANCE) || 5.0,
   MAX_DISTANCE: parseFloat(process.env.MAX_DISTANCE) || 200.0,
 };
+
+// Determinar si usar HTTPS (puerto 443 o explícitamente configurado)
+const useHttps = CONFIG.SERVER_PORT === 443 || process.env.USE_HTTPS === 'true';
 
 /**
  * Genera una distancia aleatoria simulando un sensor real
@@ -40,7 +44,7 @@ function sendSensorData() {
 
   const options = {
     hostname: CONFIG.SERVER_HOST,
-    port: CONFIG.SERVER_PORT,
+    port: useHttps ? (CONFIG.SERVER_PORT === 443 ? undefined : CONFIG.SERVER_PORT) : CONFIG.SERVER_PORT,
     path: '/sensors/data',
     method: 'POST',
     headers: {
@@ -50,9 +54,12 @@ function sendSensorData() {
   };
 
   const timestamp = new Date().toISOString();
+  const protocol = useHttps ? 'https' : 'http';
   console.log(`[${timestamp}] 📡 Enviando datos:`, sensorData);
+  console.log(`[${timestamp}] 🔗 URL: ${protocol}://${CONFIG.SERVER_HOST}${CONFIG.SERVER_PORT !== 443 && CONFIG.SERVER_PORT !== 80 ? ':' + CONFIG.SERVER_PORT : ''}/sensors/data`);
 
-  const req = http.request(options, (res) => {
+  const httpModule = useHttps ? https : http;
+  const req = httpModule.request(options, (res) => {
     let responseData = '';
 
     res.on('data', (chunk) => {
@@ -89,9 +96,15 @@ function sendSensorData() {
  * Inicia el simulador
  */
 function startSimulator() {
+  const protocol = useHttps ? 'https' : 'http';
+  const portDisplay = (CONFIG.SERVER_PORT === 443 && useHttps) || (CONFIG.SERVER_PORT === 80 && !useHttps) 
+    ? '' 
+    : `:${CONFIG.SERVER_PORT}`;
+  
   console.log('🚀 Iniciando Simulador de Sensor de Proximidad');
   console.log('📋 Configuración:');
-  console.log(`   - Servidor: http://${CONFIG.SERVER_HOST}:${CONFIG.SERVER_PORT}`);
+  console.log(`   - Servidor: ${protocol}://${CONFIG.SERVER_HOST}${portDisplay}`);
+  console.log(`   - Protocolo: ${protocol.toUpperCase()}`);
   console.log(`   - Sensor ID: ${CONFIG.SENSOR_ID}`);
   console.log(`   - Intervalo: ${CONFIG.INTERVAL_MS}ms`);
   console.log(`   - Rango de distancia: ${CONFIG.MIN_DISTANCE}cm - ${CONFIG.MAX_DISTANCE}cm`);
