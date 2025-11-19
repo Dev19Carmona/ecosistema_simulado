@@ -150,6 +150,75 @@
             margin-top: 20px;
             font-size: 0.9em;
         }
+
+        .simulator-control {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .simulator-control h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .simulator-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+            font-weight: 600;
+        }
+
+        .simulator-button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .simulator-button:active {
+            transform: translateY(0);
+        }
+
+        .simulator-button.stop {
+            background: #f44336;
+        }
+
+        .simulator-button.stop:hover {
+            background: #d32f2f;
+        }
+
+        .simulator-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .simulator-status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.95em;
+        }
+
+        .simulator-status.running {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .simulator-status.stopped {
+            background: #ffebee;
+            color: #c62828;
+        }
     </style>
 </head>
 <body>
@@ -158,6 +227,18 @@
         
         <div id="error" style="display: none;" class="error"></div>
         
+        <div class="simulator-control">
+            <h2>🤖 Control del Simulador</h2>
+            <div>
+                <button id="simulatorBtn" class="simulator-button" onclick="toggleSimulator()">
+                    Iniciar Simulador
+                </button>
+            </div>
+            <div id="simulatorStatus" class="simulator-status stopped">
+                ⏸️ Simulador detenido
+            </div>
+        </div>
+
         <div class="stats-grid">
             <div class="stat-card">
                 <h3>📈 Total de Lecturas</h3>
@@ -418,6 +499,97 @@
                 loadTable()
             ]);
         }
+
+        // ========== Control del Simulador ==========
+        let simulatorStatusCheckInterval = null;
+
+        // Cargar estado del simulador
+        async function loadSimulatorStatus() {
+            try {
+                const response = await fetch(`${API_URL}/sensors/simulator/status`);
+                if (!response.ok) throw new Error('Error al cargar estado del simulador');
+                
+                const data = await response.json();
+                updateSimulatorUI(data.status.isRunning);
+            } catch (error) {
+                console.error('Error al cargar estado del simulador:', error);
+            }
+        }
+
+        // Actualizar UI del simulador
+        function updateSimulatorUI(isRunning) {
+            const btn = document.getElementById('simulatorBtn');
+            const statusDiv = document.getElementById('simulatorStatus');
+            
+            if (isRunning) {
+                btn.textContent = 'Detener Simulador';
+                btn.className = 'simulator-button stop';
+                statusDiv.textContent = '▶️ Simulador en ejecución - Enviando datos cada 5 segundos';
+                statusDiv.className = 'simulator-status running';
+            } else {
+                btn.textContent = 'Iniciar Simulador';
+                btn.className = 'simulator-button';
+                statusDiv.textContent = '⏸️ Simulador detenido';
+                statusDiv.className = 'simulator-status stopped';
+            }
+        }
+
+        // Toggle del simulador (iniciar/detener)
+        async function toggleSimulator() {
+            const btn = document.getElementById('simulatorBtn');
+            const statusDiv = document.getElementById('simulatorStatus');
+            
+            btn.disabled = true;
+            statusDiv.textContent = '⏳ Procesando...';
+            
+            try {
+                // Obtener estado actual
+                const statusResponse = await fetch(`${API_URL}/sensors/simulator/status`);
+                const statusData = await statusResponse.json();
+                const isRunning = statusData.status.isRunning;
+                
+                let response;
+                if (isRunning) {
+                    // Detener simulador
+                    response = await fetch(`${API_URL}/sensors/simulator/stop`, {
+                        method: 'POST',
+                    });
+                } else {
+                    // Iniciar simulador
+                    response = await fetch(`${API_URL}/sensors/simulator/start`, {
+                        method: 'POST',
+                    });
+                }
+                
+                if (!response.ok) throw new Error('Error al controlar el simulador');
+                
+                const result = await response.json();
+                updateSimulatorUI(result.status.isRunning);
+                
+                // Mostrar mensaje de éxito (usando un mensaje temporal)
+                const statusDiv = document.getElementById('simulatorStatus');
+                const originalText = statusDiv.textContent;
+                statusDiv.textContent = `✅ ${result.message}`;
+                setTimeout(() => {
+                    loadSimulatorStatus();
+                }, 2000);
+            } catch (error) {
+                showError(`Error: ${error.message}`);
+                console.error('Error:', error);
+                // Recargar estado en caso de error
+                loadSimulatorStatus();
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // Cargar estado inicial del simulador
+        loadSimulatorStatus();
+
+        // Actualizar estado del simulador cada 10 segundos
+        simulatorStatusCheckInterval = setInterval(loadSimulatorStatus, 10000);
+
+        // ========== Fin Control del Simulador ==========
 
         // Cargar datos iniciales
         loadAllData();

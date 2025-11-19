@@ -924,7 +924,14 @@ Una vez desplegado en Render.com, todos los servicios están disponibles desde u
 **Uso:**
 1. Simplemente abre https://ecosistema-simulado.onrender.com en tu navegador
 2. El dashboard se cargará automáticamente
-3. Los datos se actualizarán cada 5 segundos
+3. **Control del Simulador**: Usa el botón "Iniciar Simulador" en la parte superior del dashboard
+4. Los datos se actualizarán cada 5 segundos automáticamente
+
+**Control del Simulador:**
+- ✅ **Botón "Iniciar Simulador"**: Inicia el simulador directamente desde Render.com
+- ✅ **Botón "Detener Simulador"**: Detiene el simulador cuando está en ejecución
+- ✅ **Estado en tiempo real**: Muestra si el simulador está corriendo o detenido
+- ✅ **Funciona completamente en Render**: No necesitas ejecutar nada localmente
 
 ### 🌐 API REST (Desplegada en Render.com)
 
@@ -955,6 +962,23 @@ Una vez desplegado en Render.com, todos los servicios están disponibles desde u
    curl -X POST https://ecosistema-simulado.onrender.com/sensors/data \
      -H "Content-Type: application/json" \
      -d '{"sensor_id":"sensor_01","distancia_cm":25.5}'
+   ```
+
+6. **Control del Simulador:**
+   - **Iniciar simulador**: `POST /sensors/simulator/start`
+   - **Detener simulador**: `POST /sensors/simulator/stop`
+   - **Estado del simulador**: `GET /sensors/simulator/status`
+
+   **Ejemplo:**
+   ```bash
+   # Iniciar simulador
+   curl -X POST https://ecosistema-simulado.onrender.com/sensors/simulator/start
+   
+   # Ver estado
+   curl https://ecosistema-simulado.onrender.com/sensors/simulator/status
+   
+   # Detener simulador
+   curl -X POST https://ecosistema-simulado.onrender.com/sensors/simulator/stop
    ```
 
 ### 📊 Dashboard HTML (Alternativa Local)

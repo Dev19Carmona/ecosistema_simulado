@@ -1,10 +1,14 @@
 import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { SensorsService } from './sensors.service';
+import { SimulatorService } from './simulator.service';
 import { CreateSensorDataDto } from './dto/create-sensor-data.dto';
 
 @Controller('sensors')
 export class SensorsController {
-  constructor(private readonly sensorsService: SensorsService) {}
+  constructor(
+    private readonly sensorsService: SensorsService,
+    private readonly simulatorService: SimulatorService,
+  ) {}
 
   @Post('data')
   async createSensorData(@Body() createSensorDataDto: CreateSensorDataDto) {
@@ -54,6 +58,32 @@ export class SensorsController {
     return {
       success: true,
       stats,
+    };
+  }
+
+  @Post('simulator/start')
+  async startSimulator() {
+    const result = this.simulatorService.start();
+    return {
+      ...result,
+      status: this.simulatorService.getStatus(),
+    };
+  }
+
+  @Post('simulator/stop')
+  async stopSimulator() {
+    const result = this.simulatorService.stop();
+    return {
+      ...result,
+      status: this.simulatorService.getStatus(),
+    };
+  }
+
+  @Get('simulator/status')
+  async getSimulatorStatus() {
+    return {
+      success: true,
+      status: this.simulatorService.getStatus(),
     };
   }
 }
