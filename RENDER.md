@@ -87,18 +87,36 @@ ecosistema_simulado/
    **Configuración de Deploy:**
    - **Auto-Deploy**: `Yes` (se despliega automáticamente en cada push)
 
-4. **Variables de Entorno**
+4. **Variables de Entorno** ⚠️ **CRÍTICO**
+
+   **IMPORTANTE**: Esta es la configuración más importante. Sin `MONGODB_URI`, tu aplicación no funcionará.
 
    Click en "Advanced" → "Add Environment Variable" y agrega:
 
    | Key | Value | Requerido |
    |-----|-------|-----------|
-   | `MONGODB_URI` | `mongodb+srv://usuario:password@cluster.mongodb.net/ecosistema_simulado?retryWrites=true&w=majority` | ✅ Sí |
+   | `MONGODB_URI` | `mongodb+srv://usuario:password@cluster.mongodb.net/ecosistema_simulado?retryWrites=true&w=majority` | ✅ **SÍ - OBLIGATORIO** |
    | `PORT` | Render.com asigna automáticamente - **NO configures esta variable** | ❌ No |
 
-   ⚠️ **Importante**: 
-   - Reemplaza `usuario:password@cluster.mongodb.net` con tus credenciales reales de MongoDB Atlas
-   - **NO configures PORT**: Render.com asigna automáticamente el puerto y lo inyecta en la variable `PORT`. Tu aplicación ya está configurada para leerla desde `process.env.PORT`
+   **Pasos detallados para obtener MONGODB_URI:**
+   
+   1. Ve a https://cloud.mongodb.com
+   2. Inicia sesión en tu cuenta
+   3. Selecciona tu cluster
+   4. Click en **"Connect"**
+   5. Selecciona **"Connect your application"**
+   6. Copia la connection string (formato: `mongodb+srv://<username>:<password>@cluster.mongodb.net/`)
+   7. Reemplaza `<password>` con tu contraseña real
+   8. Agrega el nombre de la base de datos: `/ecosistema_simulado`
+   9. Agrega los parámetros: `?retryWrites=true&w=majority`
+   10. **Ejemplo completo**: `mongodb+srv://usuario:MiPassword123@cluster0.xxxxx.mongodb.net/ecosistema_simulado?retryWrites=true&w=majority`
+
+   ⚠️ **Verificaciones importantes**: 
+   - La URI debe comenzar con `mongodb+srv://` o `mongodb://`
+   - No debe tener espacios al inicio o final
+   - La contraseña no debe tener caracteres especiales sin codificar (usa % encoding si es necesario)
+   - En MongoDB Atlas: Network Access → Asegúrate de permitir `0.0.0.0/0` (todas las IPs)
+   - **NO configures PORT**: Render.com asigna automáticamente el puerto
 
 5. **Plan y Crear**
 
@@ -256,12 +274,33 @@ SERVER_HOST=tu-app.onrender.com SERVER_PORT=443 USE_HTTPS=true node simulator.js
 
 ### Error de conexión a MongoDB
 
-**Problema**: `MongooseError: connect ECONNREFUSED`
+**Problema 1**: `MongoParseError: Invalid scheme, expected connection string to start with "mongodb://" or "mongodb+srv://"`
+
+**Causa**: La variable `MONGODB_URI` no está configurada o está vacía en Render.com
 
 **Solución**:
-1. Verifica que `MONGODB_URI` esté correcta en Render.com
-2. Verifica que MongoDB Atlas permita conexiones desde `0.0.0.0/0`
+1. Ve a tu servicio en Render.com
+2. Click en "Environment" en el menú lateral
+3. Verifica que exista la variable `MONGODB_URI`
+4. Si no existe, click en "Add Environment Variable":
+   - Key: `MONGODB_URI`
+   - Value: Tu connection string completa de MongoDB Atlas
+5. **Formato correcto**: `mongodb+srv://usuario:password@cluster.mongodb.net/ecosistema_simulado?retryWrites=true&w=majority`
+6. Guarda los cambios
+7. Render.com reiniciará automáticamente el servicio
+
+**Problema 2**: `MongooseError: connect ECONNREFUSED` o timeout
+
+**Causa**: Problemas de red o credenciales incorrectas
+
+**Solución**:
+1. Verifica que `MONGODB_URI` esté correcta en Render.com (sin espacios, formato correcto)
+2. Verifica que MongoDB Atlas permita conexiones desde `0.0.0.0/0`:
+   - Ve a MongoDB Atlas → Network Access
+   - Asegúrate de tener `0.0.0.0/0` en la lista (permite todas las IPs)
 3. Verifica que el usuario y contraseña sean correctos
+4. Verifica que el nombre del cluster sea correcto en la URI
+5. Verifica que la base de datos exista (o se creará automáticamente)
 
 ### El servicio se duerme (Free Plan)
 
