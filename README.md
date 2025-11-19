@@ -1,6 +1,6 @@
 # 🌐 Ecosistema de Monitoreo Simulado - Sensores IoT
 
-Sistema completo de monitoreo IoT con simulación de sensores de proximidad, almacenamiento en **MongoDB Atlas** (nube) y visualización mediante dashboard web.
+Sistema completo de monitoreo IoT con simulación de sensores de proximidad, almacenamiento en **MongoDB** (Atlas en nube o local con Docker) y visualización mediante dashboard web o Grafana.
 
 ---
 
@@ -9,12 +9,18 @@ Sistema completo de monitoreo IoT con simulación de sensores de proximidad, alm
 Proyecto académico que simula un ecosistema de monitoreo IoT donde:
 - Un **sensor de proximidad simulado** envía datos en formato JSON
 - Un **servidor NestJS** recibe y almacena los datos
-- **MongoDB Atlas** (base de datos en la nube) almacena persistentemente
-- Un **dashboard web** visualiza los datos en tiempo real
+- **MongoDB** almacena persistentemente (Atlas en nube o local con Docker)
+- Un **dashboard web** o **Grafana** visualiza los datos en tiempo real
+
+**Dos opciones de despliegue disponibles:**
+- **Opción 1 (Manual)**: MongoDB Atlas + Dashboard HTML
+- **Opción 2 (Docker)**: MongoDB Local + Grafana + Dashboard HTML
 
 ---
 
 ## 🏗️ Arquitectura del Sistema
+
+### Opción 1: Con MongoDB Atlas (Manual)
 
 ```
 ┌─────────────────┐
@@ -42,24 +48,65 @@ Proyecto académico que simula un ecosistema de monitoreo IoT donde:
 └─────────────────┘
 ```
 
+### Opción 2: Con Docker (MongoDB Local + Grafana)
+
+```
+┌─────────────────┐
+│  Simulador JS   │  ← Script que simula sensor IoT
+│ (simulator.js)  │
+└────────┬────────┘
+         │ HTTP POST (JSON)
+         │ {"sensor_id": "...", "distancia_cm": ...}
+         ▼
+┌─────────────────┐
+│   API NestJS    │  ← Servidor backend (Docker)
+│ (Puerto 3000)   │
+└────────┬────────┘
+         │ Mongoose ODM
+         ▼
+┌─────────────────┐
+│   MongoDB       │  ← Base de datos local (Docker)
+│ (Puerto 27017)  │
+└────────┬────────┘
+         │
+         ├──────────────┐
+         ▼              ▼
+┌─────────────────┐  ┌─────────────────┐
+│    Grafana      │  │ Dashboard HTML  │
+│ (Puerto 3001)   │  │ (dashboard.html) │
+└─────────────────┘  └─────────────────┘
+```
+
 ---
 
 ## 📦 Tecnologías Utilizadas
 
 - **Backend**: NestJS 11.x + TypeScript
-- **Base de Datos**: MongoDB Atlas (nube)
+- **Base de Datos**: 
+  - Opción 1: MongoDB Atlas (nube)
+  - Opción 2: MongoDB 7.0 (Docker)
 - **ODM**: Mongoose
 - **Runtime**: Node.js 24.x
 - **Validación**: class-validator + class-transformer
-- **Visualización**: HTML + Chart.js
+- **Visualización**: 
+  - Opción 1: HTML + Chart.js
+  - Opción 2: Grafana + HTML + Chart.js
+- **Containerización**: Docker + Docker Compose (Opción 2)
 
 ---
 
 ## 📋 Requisitos Previos
 
+### Opción 1: Instalación Manual
 - **Node.js** >= 18.x
 - **npm** >= 9.x
 - Cuenta en **MongoDB Atlas** (gratis)
+- Navegador web moderno
+
+### Opción 2: Instalación con Docker
+- **Docker** >= 24.x
+- **Docker Compose** >= 2.x
+- **Node.js** >= 18.x (solo para el simulador)
 - Navegador web moderno
 
 ---
@@ -73,13 +120,21 @@ git clone <repository-url>
 cd ecosistema_simulado
 ```
 
-### 2. Instalar Dependencias
+### 2. Elegir Método de Instalación
+
+Elige una de las dos opciones según tus necesidades:
+
+---
+
+## 📦 Opción 1: Instalación Manual (MongoDB Atlas)
+
+### Paso 1: Instalar Dependencias
 
 ```bash
 npm install
 ```
 
-### 3. Configurar Variables de Entorno
+### Paso 2: Configurar Variables de Entorno
 
 El archivo `.env` ya está configurado con MongoDB Atlas:
 
@@ -88,11 +143,7 @@ PORT=3000
 MONGODB_URI=mongodb+srv://camilocr3:Samanta1234*@loanscluster.fktx4sx.mongodb.net/ecosistema_simulado?retryWrites=true&w=majority
 ```
 
----
-
-## 💻 Uso
-
-### Paso 1: Iniciar el Servidor
+### Paso 3: Iniciar el Servidor
 
 ```bash
 npm run start:dev
@@ -103,7 +154,7 @@ npm run start:dev
 🚀 Servidor ejecutándose en http://localhost:3000
 ```
 
-### Paso 2: Ejecutar el Simulador (En otra terminal)
+### Paso 4: Ejecutar el Simulador (En otra terminal)
 
 ```bash
 node simulator.js
@@ -116,7 +167,7 @@ node simulator.js
 ✅ Datos enviados exitosamente
 ```
 
-### Paso 3: Visualizar los Datos
+### Paso 5: Visualizar los Datos
 
 **Opción A: Dashboard HTML** (Recomendado)
 - Haz doble clic en `dashboard.html`
@@ -129,6 +180,123 @@ node simulator.js
 **Opción C: MongoDB Atlas Web**
 - Ir a https://cloud.mongodb.com
 - Browse Collections → `ecosistema_simulado` → `sensordatas`
+
+---
+
+## 🐳 Opción 2: Instalación con Docker (MongoDB Local + Grafana)
+
+### Paso 1: Instalar Dependencias (solo para el simulador)
+
+```bash
+npm install
+```
+
+### Paso 2: Levantar Servicios con Docker Compose
+
+```bash
+docker-compose up -d
+```
+
+Este comando iniciará automáticamente:
+- **MongoDB** en el puerto 27017
+- **NestJS API** en el puerto 3000
+- **Grafana** en el puerto 3001
+
+### Paso 3: Verificar que los Servicios Estén Corriendo
+
+```bash
+docker-compose ps
+```
+
+**Deberías ver los 3 servicios en estado "Up":**
+```
+NAME                STATUS
+ecosistema-mongodb  Up
+ecosistema-api      Up
+ecosistema-grafana  Up
+```
+
+### Paso 4: Esperar que los Servicios Inicien
+
+Espera aproximadamente 15-20 segundos para que todos los servicios estén listos.
+
+### Paso 5: Verificar el Servidor
+
+```bash
+curl http://localhost:3000/sensors/stats
+```
+
+**Deberías ver:**
+```json
+{
+  "success": true,
+  "stats": {
+    "total_readings": 0,
+    "recent_readings_last_hour": 0,
+    "average_distance_cm": "0.00"
+  }
+}
+```
+
+### Paso 6: Ejecutar el Simulador (En otra terminal)
+
+```bash
+node simulator.js
+```
+
+**Deberías ver:**
+```
+🚀 Iniciando Simulador de Sensor de Proximidad
+📡 Enviando datos: { sensor_id: 'proximidad_01', distancia_cm: 45.32 }
+✅ Datos enviados exitosamente
+```
+
+### Paso 7: Visualizar los Datos
+
+**Opción A: Grafana Dashboard** (Recomendado con Docker)
+1. Abrir http://localhost:3001 en tu navegador
+2. Login con:
+   - Usuario: `admin`
+   - Contraseña: `admin`
+3. Configurar data source MongoDB:
+   - URL: `mongodb://mongodb:27017`
+   - Database: `ecosistema_simulado`
+   - Collection: `sensordatas`
+4. Crear dashboard con paneles Time Series
+
+**Opción B: Dashboard HTML**
+- Haz doble clic en `dashboard.html`
+- O ejecuta: `abrir-dashboard.bat`
+
+**Opción C: API REST (JSON)**
+- http://localhost:3000/sensors/data
+- http://localhost:3000/sensors/stats
+
+**Opción D: MongoDB Shell**
+```bash
+docker exec -it ecosistema-mongodb mongosh
+use ecosistema_simulado
+db.sensordatas.find().pretty()
+```
+
+### Comandos Útiles de Docker
+
+```bash
+# Ver logs de todos los servicios
+docker-compose logs -f
+
+# Ver logs de un servicio específico
+docker-compose logs -f api
+
+# Detener todos los servicios
+docker-compose down
+
+# Detener y eliminar volúmenes (borra datos)
+docker-compose down -v
+
+# Reiniciar un servicio específico
+docker-compose restart api
+```
 
 ---
 
@@ -422,13 +590,22 @@ npm run test           # Ejecutar tests unitarios
 
 ### El servidor no inicia
 
-**Solución:**
+**Opción Manual:**
 ```bash
 # Verificar que el puerto 3000 esté libre
 netstat -ano | findstr :3000
 
 # Si está ocupado, cambiar en .env
 PORT=3001
+```
+
+**Opción Docker:**
+```bash
+# Verificar logs del servicio API
+docker-compose logs api
+
+# Reiniciar el servicio
+docker-compose restart api
 ```
 
 ### El simulador no conecta
@@ -441,50 +618,114 @@ PORT=3001
 curl http://localhost:3000/sensors/stats
 ```
 
+**Si usas Docker:**
+```bash
+# Verificar que el contenedor esté corriendo
+docker-compose ps
+
+# Si no está corriendo, iniciarlo
+docker-compose up -d
+```
+
 ### Dashboard no muestra datos
 
 **Causa:** Servidor no está corriendo o no hay datos
 
 **Solución:**
-1. Verificar servidor: `npm run start:dev`
+1. Verificar servidor: 
+   - Manual: `npm run start:dev`
+   - Docker: `docker-compose ps`
 2. Ejecutar simulador: `node simulator.js`
 3. Esperar 10 segundos y refrescar dashboard
 
 ### Error de conexión a MongoDB
 
-**Causa:** Problemas de red o credenciales incorrectas
-
-**Solución:**
+**Opción Manual (MongoDB Atlas):**
 1. Verificar conexión a internet
 2. Verificar que la URI en `.env` sea correcta
 3. En MongoDB Atlas: Network Access → Add IP → `0.0.0.0/0`
+
+**Opción Docker (MongoDB Local):**
+```bash
+# Verificar que MongoDB esté corriendo
+docker-compose ps mongodb
+
+# Ver logs de MongoDB
+docker-compose logs mongodb
+
+# Reiniciar MongoDB
+docker-compose restart mongodb
+```
+
+### Grafana no se conecta a MongoDB
+
+**Causa:** Configuración incorrecta del data source
+
+**Solución:**
+1. Verificar que MongoDB esté corriendo: `docker-compose ps mongodb`
+2. En Grafana (http://localhost:3001):
+   - Ir a Configuration → Data Sources
+   - URL debe ser: `mongodb://mongodb:27017`
+   - Database: `ecosistema_simulado`
+   - Collection: `sensordatas`
+3. Probar la conexión desde Grafana
+
+### Docker Compose no inicia los servicios
+
+**Solución:**
+```bash
+# Ver logs completos
+docker-compose logs
+
+# Detener y volver a iniciar
+docker-compose down
+docker-compose up -d
+
+# Verificar puertos ocupados
+netstat -ano | findstr :3000
+netstat -ano | findstr :3001
+netstat -ano | findstr :27017
+```
 
 ---
 
 ## 📊 Opciones de Visualización
 
-### 1. Dashboard HTML (Incluido)
+### 1. Dashboard HTML (Disponible en ambas opciones)
 - ✅ Interfaz moderna con gráficos
-- ✅ Auto-actualización
+- ✅ Auto-actualización cada 5 segundos
 - ✅ Sin instalaciones adicionales
+- ✅ Funciona con MongoDB Atlas y MongoDB local
 
-### 2. MongoDB Atlas Web UI
+### 2. Grafana (Solo con Docker)
+- ✅ Dashboard profesional y avanzado
+- ✅ Múltiples tipos de paneles (Time Series, Gauge, Stat, Table)
+- ✅ Filtros y consultas avanzadas
+- ✅ Auto-refresh configurable
+- ✅ Acceso: http://localhost:3001 (admin/admin)
+
+### 3. MongoDB Atlas Web UI (Solo con Opción Manual)
 - ✅ Ver datos directamente en la nube
 - ✅ Interfaz profesional
 - ✅ Gratis
+- ✅ Acceso: https://cloud.mongodb.com
 
-### 3. MongoDB Compass
+### 4. MongoDB Compass (Ambas opciones)
 - ✅ Aplicación de escritorio
 - ✅ Exploración avanzada
 - ✅ Descarga: https://www.mongodb.com/products/compass
+- ✅ Conecta a MongoDB Atlas o MongoDB local
 
-### 4. API REST (JSON)
+### 5. API REST (JSON) (Ambas opciones)
 - ✅ Acceso directo mediante curl o navegador
 - ✅ Ideal para integración con otras herramientas
+- ✅ Endpoints: http://localhost:3000/sensors/data
 
 ---
 
-## 🎯 Demo Rápida (5 minutos)
+## 🎯 Demo Rápida
+
+### Opción 1: Manual (5 minutos)
 
 ```bash
 # 1. Iniciar servidor
@@ -499,16 +740,51 @@ node simulator.js
 # Opción C: https://cloud.mongodb.com
 ```
 
+### Opción 2: Docker (5 minutos)
+
+```bash
+# 1. Levantar servicios Docker
+docker-compose up -d
+
+# 2. Esperar 15-20 segundos
+# 3. Verificar servicios
+docker-compose ps
+
+# 4. Ejecutar simulador (en otra terminal)
+node simulator.js
+
+# 5. Ver datos
+# Opción A: Grafana en http://localhost:3001 (admin/admin)
+# Opción B: Dashboard HTML (abrir dashboard.html)
+# Opción C: API REST http://localhost:3000/sensors/data
+```
+
 ---
 
-## ✨ Ventajas de MongoDB Atlas
+## ✨ Comparación de Opciones
 
+### Opción 1: MongoDB Atlas (Manual)
+**Ventajas:**
 - ✅ **No requiere instalación local** de MongoDB
 - ✅ **Backups automáticos** incluidos
 - ✅ **Accesible desde cualquier lugar** con internet
 - ✅ **Escalabilidad automática** según demanda
 - ✅ **Monitoreo incluido** en el dashboard de Atlas
 - ✅ **Nivel gratuito suficiente** para el proyecto
+- ✅ **No requiere Docker**
+
+**Ideal para:** Desarrollo rápido, acceso remoto, proyectos pequeños
+
+### Opción 2: Docker (MongoDB Local + Grafana)
+**Ventajas:**
+- ✅ **Todo en contenedores** - fácil de desplegar
+- ✅ **Grafana incluido** - visualización profesional
+- ✅ **MongoDB local** - sin dependencia de internet
+- ✅ **Aislamiento completo** - no afecta el sistema
+- ✅ **Reproducible** - mismo entorno en cualquier máquina
+- ✅ **Fácil de limpiar** - `docker-compose down -v`
+
+**Ideal para:** Desarrollo local, demostraciones, aprendizaje de Docker
 
 ---
 
@@ -544,9 +820,16 @@ Si encuentras algún problema:
 
 **¡Listo para usar!** 🚀
 
-Para iniciar:
+### Inicio Rápido - Opción Manual:
 ```bash
 npm run start:dev
 node simulator.js
 # Abrir dashboard.html
+```
+
+### Inicio Rápido - Opción Docker:
+```bash
+docker-compose up -d
+node simulator.js
+# Abrir http://localhost:3001 (Grafana) o dashboard.html
 ```
