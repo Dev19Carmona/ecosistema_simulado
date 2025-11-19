@@ -281,6 +281,26 @@ SERVER_HOST=tu-app.onrender.com SERVER_PORT=443 USE_HTTPS=true node simulator.js
 2. El multi-stage build debería optimizar el tiempo
 3. Render.com cachea las capas de Docker entre builds
 
+### Error de dependencias (ERESOLVE)
+
+**Problema**: Error `npm error ERESOLVE unable to resolve dependency tree` relacionado con `@nestjs/config`
+
+**Síntomas**:
+```
+npm error Could not resolve dependency:
+npm error peer @nestjs/common@"^8.0.0 || ^9.0.0 || ^10.0.0" from @nestjs/config@3.3.0
+```
+
+**Solución**: 
+✅ **Ya está corregido** en el proyecto:
+- `@nestjs/config` ha sido actualizado a `^3.4.0` (compatible con NestJS 11)
+- El Dockerfile usa `--legacy-peer-deps` como respaldo adicional
+
+Si aún tienes problemas:
+1. Verifica que `package.json` tenga `"@nestjs/config": "^3.4.0"`
+2. Verifica que el Dockerfile use `--legacy-peer-deps` en los comandos `npm ci`
+3. Haz commit y push de los cambios
+
 ---
 
 ## 📊 Monitoreo

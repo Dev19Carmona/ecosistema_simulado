@@ -11,8 +11,8 @@ COPY package*.json ./
 COPY tsconfig*.json ./
 COPY nest-cli.json ./
 
-# Instalar dependencias
-RUN npm ci
+# Instalar dependencias (con --legacy-peer-deps como respaldo)
+RUN npm ci --legacy-peer-deps
 
 # Copiar código fuente
 COPY src ./src
@@ -32,8 +32,8 @@ RUN addgroup -g 1001 -S nodejs && \
 # Copiar archivos de dependencias
 COPY package*.json ./
 
-# Instalar solo dependencias de producción
-RUN npm ci --only=production && npm cache clean --force
+# Instalar solo dependencias de producción (con --legacy-peer-deps como respaldo)
+RUN npm ci --only=production --legacy-peer-deps && npm cache clean --force
 
 # Copiar el build desde el stage anterior
 COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
