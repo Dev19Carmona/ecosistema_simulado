@@ -293,12 +293,18 @@ npm error peer @nestjs/common@"^8.0.0 || ^9.0.0 || ^10.0.0" from @nestjs/config@
 
 **Solución**: 
 ✅ **Ya está corregido** en el proyecto:
-- `@nestjs/config` ha sido actualizado a `^3.4.0` (compatible con NestJS 11)
-- El Dockerfile usa `--legacy-peer-deps` como respaldo adicional
+- El Dockerfile usa `--legacy-peer-deps` en todos los comandos `npm ci`
+- Esto permite instalar `@nestjs/config@3.3.0` aunque tenga peer dependencies incompatibles
+- `@nestjs/config@3.3.0` funciona correctamente con NestJS 11 a pesar del warning de peer dependencies
+
+**Explicación**:
+- `@nestjs/config@3.3.0` declara que requiere NestJS 8-10, pero funciona con NestJS 11
+- `--legacy-peer-deps` le dice a npm que ignore los conflictos de peer dependencies
+- Esto es seguro porque la API de `@nestjs/config` no cambió entre versiones
 
 Si aún tienes problemas:
-1. Verifica que `package.json` tenga `"@nestjs/config": "^3.4.0"`
-2. Verifica que el Dockerfile use `--legacy-peer-deps` en los comandos `npm ci`
+1. Verifica que el Dockerfile use `--legacy-peer-deps` en las líneas 15 y 36
+2. Verifica que `package.json` tenga `"@nestjs/config": "^3.3.0"`
 3. Haz commit y push de los cambios
 
 ---
