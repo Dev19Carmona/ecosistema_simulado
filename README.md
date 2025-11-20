@@ -1,6 +1,28 @@
 # 🌐 Ecosistema de Monitoreo Simulado - Sensores IoT
 
-Sistema completo de monitoreo IoT con simulación de sensores de proximidad, almacenamiento en **MongoDB** (Atlas en nube o local con Docker) y visualización mediante dashboard web o Grafana.
+Sistema completo de monitoreo IoT con simulación de **ESP32 + DHT22** en **Wokwi**, almacenamiento en **MongoDB** (Atlas en nube o local con Docker) y visualización mediante dashboard web o Grafana.
+
+## 🎮 **NUEVO: Simulación ESP32 + DHT22 en Wokwi**
+
+Este proyecto ahora incluye una **simulación completa de ESP32 con sensor DHT22** usando la plataforma **Wokwi**:
+
+- ✅ **ESP32 virtual** con sensor DHT22
+- ✅ **Lectura de temperatura y humedad** en tiempo real
+- ✅ **Envío de datos por WiFi** mediante HTTP POST
+- ✅ **Sin hardware físico necesario**
+- ✅ **Dashboard actualizado** para mostrar temperatura y humedad
+
+### 🚀 Inicio Rápido con Wokwi
+
+1. **Iniciar servidor:** `npm run start:dev`
+2. **Abrir Wokwi:** https://wokwi.com
+3. **Cargar código:** Archivo `wokwi/esp32_dht22.ino`
+4. **Configurar IP:** Cambiar URL del servidor en el código
+5. **Simular:** Click en ▶️ y observar datos
+
+📖 **Guía completa:** [INICIO-RAPIDO-WOKWI.md](INICIO-RAPIDO-WOKWI.md)
+
+📚 **Documentación detallada:** [WOKWI-ESP32.md](WOKWI-ESP32.md)
 
 ---
 

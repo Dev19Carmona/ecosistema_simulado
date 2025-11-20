@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "author": "Ecosistema Simulado",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-esp32-devkit-v1",
+      "id": "esp32",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht22",
+      "top": -9.6,
+      "left": 172.8,
+      "attrs": {
+        "temperature": "24",
+        "humidity": "60"
+      }
+    }
+  ],
+  "connections": [
+    [
+      "esp32:TX0",
+      "$serialMonitor:RX",
+      "",
+      []
+    ],
+    [
+      "esp32:RX0",
+      "$serialMonitor:TX",
+      "",
+      []
+    ],
+    [
+      "dht22:VCC",
+      "esp32:3V3",
+      "red",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "dht22:GND",
+      "esp32:GND.1",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "dht22:SDA",
+      "esp32:D15",
+      "green",
+      [
+        "v0"
+      ]
+    ]
+  ],
+  "dependencies": {}
+}
+

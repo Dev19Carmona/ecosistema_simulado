@@ -8,8 +8,16 @@ export class SensorData {
   @Prop({ required: true })
   sensor_id: string;
 
-  @Prop({ required: true })
-  distancia_cm: number;
+  // Campos para sensor DHT22 (temperatura y humedad)
+  @Prop({ required: false })
+  temperatura_c?: number;
+
+  @Prop({ required: false })
+  humedad_pct?: number;
+
+  // Campo para sensor de proximidad (retrocompatibilidad)
+  @Prop({ required: false })
+  distancia_cm?: number;
 
   @Prop({ default: Date.now })
   timestamp: Date;

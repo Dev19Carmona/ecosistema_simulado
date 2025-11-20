@@ -43,15 +43,34 @@ export class SensorsService {
     const total = await this.sensorDataModel.countDocuments();
     const recent = await this.findRecent(60);
     
-    const avgDistance = recent.length > 0
-      ? recent.reduce((sum, data) => sum + data.distancia_cm, 0) / recent.length
-      : 0;
-
-    return {
+    // Calcular promedios para diferentes tipos de sensores
+    const stats: any = {
       total_readings: total,
       recent_readings_last_hour: recent.length,
-      average_distance_cm: avgDistance.toFixed(2),
     };
+
+    // Calcular promedio de temperatura (sensor DHT22)
+    const tempReadings = recent.filter(d => d.temperatura_c !== undefined && d.temperatura_c !== null);
+    if (tempReadings.length > 0) {
+      const avgTemp = tempReadings.reduce((sum, data) => sum + data.temperatura_c, 0) / tempReadings.length;
+      stats.average_temperature_c = avgTemp.toFixed(2);
+    }
+
+    // Calcular promedio de humedad (sensor DHT22)
+    const humReadings = recent.filter(d => d.humedad_pct !== undefined && d.humedad_pct !== null);
+    if (humReadings.length > 0) {
+      const avgHum = humReadings.reduce((sum, data) => sum + data.humedad_pct, 0) / humReadings.length;
+      stats.average_humidity_pct = avgHum.toFixed(2);
+    }
+
+    // Calcular promedio de distancia (sensor de proximidad - retrocompatibilidad)
+    const distReadings = recent.filter(d => d.distancia_cm !== undefined && d.distancia_cm !== null);
+    if (distReadings.length > 0) {
+      const avgDist = distReadings.reduce((sum, data) => sum + data.distancia_cm, 0) / distReadings.length;
+      stats.average_distance_cm = avgDist.toFixed(2);
+    }
+
+    return stats;
   }
 }
 

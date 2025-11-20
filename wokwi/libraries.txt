@@ -1,0 +1,11 @@
+# Bibliotecas requeridas para el ESP32 con DHT22
+# 
+# Estas bibliotecas deben estar instaladas en el Arduino IDE
+# o se incluirán automáticamente en Wokwi
+
+DHT sensor library @ 1.4.4
+Adafruit Unified Sensor @ 1.1.9
+ArduinoJson @ 6.21.3
+WiFi (incluida en ESP32 core)
+HTTPClient (incluida en ESP32 core)
+

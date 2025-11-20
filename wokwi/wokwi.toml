@@ -1,0 +1,14 @@
+[wokwi]
+version = 1
+firmware = "esp32_dht22.ino"
+elf = "esp32_dht22.elf"
+
+# Bibliotecas requeridas
+[[wokwi.libraries]]
+name = "DHT sensor library"
+version = "1.4.4"
+
+[[wokwi.libraries]]
+name = "ArduinoJson"
+version = "6.21.3"
+

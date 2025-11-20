@@ -13,6 +13,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "simulator": "node simulator.js",
+    "simulator:dht22": "node wokwi/test-data.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
