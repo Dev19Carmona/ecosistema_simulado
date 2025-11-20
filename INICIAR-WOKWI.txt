@@ -1,0 +1,127 @@
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║     🎮 SIMULACIÓN ESP32 + DHT22 EN WOKWI                    ║
+║        Enviando datos a Render.com                          ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────┐
+│  PASO 1: Abrir Wokwi                                        │
+└──────────────────────────────────────────────────────────────┘
+
+1. Ve a: https://wokwi.com
+2. Inicia sesión (o crea cuenta gratis)
+3. Click en "New Project" → "ESP32"
+
+
+┌──────────────────────────────────────────────────────────────┐
+│  PASO 2: Copiar el Código                                   │
+└──────────────────────────────────────────────────────────────┘
+
+Opción A:
+  • Abre: wokwi/esp32_dht22_render.ino
+  • Copia TODO el contenido
+  • Pega en el editor de Wokwi
+
+Opción B:
+  • Abre: WOKWI-RENDER-PASO-A-PASO.md
+  • Copia el código completo de la sección "Paso 2"
+  • Pega en Wokwi
+
+
+┌──────────────────────────────────────────────────────────────┐
+│  PASO 3: Agregar Sensor DHT22                               │
+└──────────────────────────────────────────────────────────────┘
+
+En Wokwi:
+  1. Click en "+" (arriba derecha)
+  2. Click en "diagram.json"
+  3. Copia el contenido de: wokwi/diagram.json
+  4. Pega en Wokwi
+
+
+┌──────────────────────────────────────────────────────────────┐
+│  PASO 4: Ejecutar                                           │
+└──────────────────────────────────────────────────────────────┘
+
+1. Click en ▶️ "Start Simulation"
+2. Abre el Serial Monitor (icono de terminal)
+3. Espera a ver: "✅ HTTP 201"
+
+
+┌──────────────────────────────────────────────────────────────┐
+│  PASO 5: Ver Dashboard                                      │
+└──────────────────────────────────────────────────────────────┘
+
+Abre en otra pestaña:
+  👉 https://ecosistema-simulado.onrender.com
+
+Deberías ver datos actualizándose cada 5 segundos
+
+
+╔══════════════════════════════════════════════════════════════╗
+║  ✅ VERIFICACIÓN                                            ║
+╚══════════════════════════════════════════════════════════════╝
+
+Serial Monitor debe mostrar:
+  ✅ WiFi conectado
+  ✅ HTTP 201
+  ✅ Respuesta: {"success":true,...}
+
+Dashboard debe mostrar:
+  ✅ Total de lecturas aumentando
+  ✅ Temperatura promedio actualizándose
+  ✅ Gráficos con nuevos datos
+
+
+╔══════════════════════════════════════════════════════════════╗
+║  🎯 DATOS IMPORTANTES                                       ║
+╚══════════════════════════════════════════════════════════════╝
+
+Servidor:  https://ecosistema-simulado.onrender.com/sensors/data
+Sensor ID: wokwi_esp32_dht22
+Intervalo: 5 segundos
+GPIO:      15 (DHT22 DATA)
+
+
+╔══════════════════════════════════════════════════════════════╗
+║  📚 DOCUMENTACIÓN COMPLETA                                  ║
+╚══════════════════════════════════════════════════════════════╝
+
+• WOKWI-RENDER-PASO-A-PASO.md  → Guía detallada
+• WOKWI-ESP32.md               → Documentación completa
+• INICIO-RAPIDO-WOKWI.md       → Inicio rápido general
+
+
+╔══════════════════════════════════════════════════════════════╗
+║  🆘 SI ALGO NO FUNCIONA                                     ║
+╚══════════════════════════════════════════════════════════════╝
+
+1. Verifica la URL en el código (línea ~26):
+   const char* serverUrl = "https://ecosistema-simulado.onrender.com/sensors/data";
+
+2. Verifica conexiones del DHT22:
+   VCC  → 3V3
+   DATA → GPIO15
+   GND  → GND
+
+3. Reinicia la simulación (⏸️ luego ▶️)
+
+4. Revisa el Serial Monitor para ver mensajes de error
+
+
+╔══════════════════════════════════════════════════════════════╗
+║  🎮 INTERACCIÓN                                             ║
+╚══════════════════════════════════════════════════════════════╝
+
+• Click en el DHT22 para ajustar valores
+• Mueve los sliders de temperatura y humedad
+• Observa los cambios en el dashboard
+
+
+═══════════════════════════════════════════════════════════════
+
+            ¡LISTO PARA EMPEZAR! 🚀
+
+═══════════════════════════════════════════════════════════════
+
