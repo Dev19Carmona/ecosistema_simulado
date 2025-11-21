@@ -64,20 +64,20 @@ export class GrafanaController {
       // Formatear respuesta para cada target
       const results = targets.map(target => {
         const metric = target.target;
-        let datapoints = [];
+        let datapoints: [number, number][] = [];
 
         if (metric === 'temperatura_c') {
           datapoints = filteredData
             .filter(d => d.temperatura_c !== undefined && d.temperatura_c !== null)
-            .map(d => [d.temperatura_c, new Date(d.timestamp).getTime()]);
+            .map(d => [d.temperatura_c!, new Date(d.timestamp).getTime()]);
         } else if (metric === 'humedad_pct') {
           datapoints = filteredData
             .filter(d => d.humedad_pct !== undefined && d.humedad_pct !== null)
-            .map(d => [d.humedad_pct, new Date(d.timestamp).getTime()]);
+            .map(d => [d.humedad_pct!, new Date(d.timestamp).getTime()]);
         } else if (metric === 'distancia_cm') {
           datapoints = filteredData
             .filter(d => d.distancia_cm !== undefined && d.distancia_cm !== null)
-            .map(d => [d.distancia_cm, new Date(d.timestamp).getTime()]);
+            .map(d => [d.distancia_cm!, new Date(d.timestamp).getTime()]);
         }
 
         return {
