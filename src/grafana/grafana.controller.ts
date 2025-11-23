@@ -134,10 +134,18 @@ export class GrafanaController {
    * Endpoint adicional: Datos en formato JSON simple
    * GET /grafana/data
    * Compatible con Infinity plugin - Devuelve datos en formato array para fácil parsing
+   * Si no hay datos recientes (últimos 60 min), devuelve los últimos 100 registros
    */
   @Get('/data')
   async getData() {
-    const data = await this.sensorsService.findRecent(60);
+    // Primero intentar obtener datos recientes (últimos 60 minutos)
+    let data = await this.sensorsService.findRecent(60);
+    
+    // Si no hay datos recientes, obtener los últimos 100 registros
+    if (data.length === 0) {
+      data = await this.sensorsService.findAll();
+    }
+    
     // Formato optimizado para Infinity plugin
     return data.map(d => ({
       time: new Date(d.timestamp).getTime(), // Timestamp en milisegundos
@@ -156,6 +164,27 @@ export class GrafanaController {
   @Get('/stats')
   async getStats() {
     return await this.sensorsService.getStats();
+  }
+
+  /**
+   * Endpoint de diagnóstico - Verifica si hay datos en la base de datos
+   * GET /grafana/diagnostic
+   */
+  @Get('/diagnostic')
+  async diagnostic() {
+    const recent = await this.sensorsService.findRecent(60);
+    const all = await this.sensorsService.findAll();
+    const stats = await this.sensorsService.getStats();
+    
+    return {
+      has_recent_data: recent.length > 0,
+      recent_count: recent.length,
+      total_available: all.length,
+      stats: stats,
+      message: recent.length === 0 
+        ? 'No hay datos en los últimos 60 minutos. El endpoint /grafana/data devolverá los últimos 100 registros disponibles.'
+        : `Hay ${recent.length} registros en los últimos 60 minutos.`
+    };
   }
 }
 
