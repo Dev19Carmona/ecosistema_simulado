@@ -133,22 +133,20 @@ export class GrafanaController {
   /**
    * Endpoint adicional: Datos en formato JSON simple
    * GET /grafana/data
-   * Útil para testear y para otros tipos de visualización
+   * Compatible con Infinity plugin - Devuelve datos en formato array para fácil parsing
    */
   @Get('/data')
   async getData() {
     const data = await this.sensorsService.findRecent(60);
-    return {
-      success: true,
-      count: data.length,
-      data: data.map(d => ({
-        timestamp: d.timestamp,
-        sensor_id: d.sensor_id,
-        temperatura_c: d.temperatura_c,
-        humedad_pct: d.humedad_pct,
-        distancia_cm: d.distancia_cm,
-      })),
-    };
+    // Formato optimizado para Infinity plugin
+    return data.map(d => ({
+      time: new Date(d.timestamp).getTime(), // Timestamp en milisegundos
+      timestamp: d.timestamp,
+      sensor_id: d.sensor_id,
+      temperatura_c: d.temperatura_c ?? null,
+      humedad_pct: d.humedad_pct ?? null,
+      distancia_cm: d.distancia_cm ?? null,
+    }));
   }
 
   /**

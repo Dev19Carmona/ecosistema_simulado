@@ -3,6 +3,10 @@
 
 FROM grafana/grafana:latest
 
+# Instalar plugin Infinity (reemplazo de JSON API, permite conectar a APIs REST/JSON)
+# Este plugin permite conectar Grafana a tu API sin necesidad de plugins de pago
+RUN grafana-cli plugins install yesoreyeram-infinity-datasource
+
 # Exponer el puerto de Grafana (Render.com usa PORT automáticamente)
 EXPOSE 3000
 
