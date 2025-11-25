@@ -37,7 +37,7 @@ const char* password = "";               // Sin contraseña para Wokwi-GUEST
 // Opciones:
 // - Desarrollo local: "http://192.168.1.X:3000/sensors/data" (usa tu IP local)
 // - Render.com: "https://ecosistema-simulado.onrender.com/sensors/data"
-const char* serverUrl = "http://192.168.1.100:3000/sensors/data";
+const char* serverUrl = "https://ecosistema-simulado.onrender.com/sensors/data";
 
 // ============================================
 // CONFIGURACIÓN DEL SENSOR
